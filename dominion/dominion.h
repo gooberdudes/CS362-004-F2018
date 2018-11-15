@@ -103,6 +103,8 @@ int buyCard(int supplyPos, struct gameState *state);
 int numHandCards(struct gameState *state);
 /* How many cards current player has in hand */
 
+int playAdventurer(int drawntreasure, struct gameState *state, int *temphand, int z);
+
 int handCard(int handNum, struct gameState *state);
 /* enum value of indexed card in player's hand */
 
