@@ -1,54 +1,39 @@
-/*
-randomtestcard1.c
-Tests the Great Hall card from dominion.c
-*/
-
-#include "dominion.h"
-#include "dominion_helpers.h"
-#include "rngs.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
-#include <assert.h>
-
-#define NUMBER_OF_TESTS 100
+#include "dominion.h"
+#include "dominion_helpers.h"
+#include "rngs.h"
 
 int main (int argc, char** argv) {
+        int kingdom[10] = {adventurer, gardens, embargo, village, council_room, mine, cutpurse, sea_hag, tribute, smithy};
+        int success = 0;
+        int fail = 0;
+        int tests = 50;
 
+        int i;
+        for(i = 0; i < tests; i++) {
 
-	int k[10] = {adventurer, gardens, embargo, village, minion, mine, cutpurse, sea_hag, tribute, smithy};
-	int numSuccess = 0, numFail = 0;
+                int num_players = rand() % 4, player = 0, rand_seed = rand();//set player, #players, and random seed
+                struct gameState *g = malloc(sizeof(struct gameState));//make gamestate
+                initializeGame(num_players, kingdom, rand_seed, g);//Initialize the game with values above
 
-	for(int i = 0; i < NUMBER_OF_TESTS; i++) {
+                g->deckCount[player] = rand() % MAX_DECK;//randomize deck size
+                g->discardCount[player] = rand() % MAX_DECK;//randomize discard size
+                int pastHandCount = g->handCount[player] = rand() % MAX_HAND;//randomize hand size
+                int opponentHandCount = g->handCount[1] = rand() % MAX_HAND;//randomize opponents hand size
+                int pastNumBuys = g->numBuys;
+                cardEffect(council_room, 1, 1, 1, g, 0, 0);//play the card
+		if (pastHandCount + 3 == g->handCount[player] && pastNumBuys + 1 == g->numBuys && opponentHandCount + 1 == g->handCount[1]){//check if correct number of cards were added to hand of both player/opponent and buys was increased by 1.
+			testSuccessful++;
+		}
+		else
+			testFailed++;
 
-		struct gameState *g = malloc(sizeof(struct gameState));	
-		int numPlayers = rand() % 4;
-		int player = 0;
-		int seed = rand();
-
-		
-		initializeGame(numPlayers, k, seed, g);		
-
-		g->deckCount[player] = rand() % MAX_DECK;
-        g->discardCount[player] = rand() % MAX_DECK;
-        int originalHandCount = g->handCount[player] = rand() % MAX_HAND;
-        int opponentHandCount = g->handCount[1] = rand() % MAX_HAND;
-        int originalNumActions = g->numActions; 										
-	
-		cardEffect(great_hall, 1, 1, 1, g, 0, 0);						
-
-		if (originalHandCount  == g->handCount[player] && originalNumActions + 1  == g->numActions && opponentHandCount  == g->handCount[1]){
-            numSuccess++;
+                free(g);
         }
-        else{
-        	numFail++;
-        }
-                        
+        printf("Random Test 2: Council Room Card");
+        printf("\nThere were %d successful council room card plays, and %d failures [out of %d games]\n\n", testSuccessful, testFailed, tests);
 
-		free(g);
-	}
-
-	printf("Testing Great Hall card...\nNumber of successful tests: %d. Number of failed tests: %d. Total number of tests: %d]\n", numSuccess, numFail, NUMBER_OF_TESTS);
-
-	return 0;
+        return 0;
 }
