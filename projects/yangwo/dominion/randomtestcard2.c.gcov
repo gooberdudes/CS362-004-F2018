@@ -1,0 +1,68 @@
+        -:    0:Source:randomtestcard2.c
+        -:    0:Graph:randomtestcard2.gcno
+        -:    0:Data:randomtestcard2.gcda
+        -:    0:Runs:2
+        -:    0:Programs:1
+        -:    1:/*
+        -:    2:randomtestcard1.c
+        -:    3:Tests the Village card from dominion.c
+        -:    4:The Village card was refactored into it's own function in my Assignment 2,
+        -:    5:but was not one of the cards where a bug was introduced so 100% of tests are expected to pass.
+        -:    6:*/
+        -:    7:
+        -:    8:#include "dominion.h"
+        -:    9:#include "dominion_helpers.h"
+        -:   10:#include "rngs.h"
+        -:   11:#include <stdlib.h>
+        -:   12:#include <stdio.h>
+        -:   13:#include <math.h>
+        -:   14:#include <assert.h>
+        -:   15:
+        -:   16:#define NUMBER_OF_TESTS 100
+        -:   17:
+function main called 2 returned 100% blocks executed 88%
+        -:   18:int main (int argc, char** argv) {
+        -:   19:
+        -:   20:
+        2:   21:	int k[10] = {adventurer, gardens, embargo, village, minion, mine, cutpurse, sea_hag, tribute, smithy};
+        2:   22:	int numSuccess = 0, numFail = 0;
+        -:   23:
+      404:   24:	for(int i = 0; i < NUMBER_OF_TESTS; i++) {
+branch  0 taken 99%
+branch  1 taken 1%
+        -:   25:
+      200:   26:		struct gameState *g = malloc(sizeof(struct gameState));	
+      200:   27:		int numPlayers = rand() % 4;
+      200:   28:		int player = 0;
+      200:   29:		int seed = rand();
+        -:   30:		
+      200:   31:		initializeGame(numPlayers, k, seed, g);		
+        -:   32:
+      200:   33:		g->deckCount[player] = rand() % MAX_DECK;
+      200:   34:        g->discardCount[player] = rand() % MAX_DECK;
+      200:   35:        int originalHandCount = g->handCount[player] = rand() % MAX_HAND;
+      200:   36:        int opponentHandCount = g->handCount[1] = rand() % MAX_HAND;
+      200:   37:        int originalNumActions = g->numActions; 										
+        -:   38:	
+      200:   39:		cardEffect(village, 1, 1, 1, g, 0, 0);						
+        -:   40:
+      200:   41:		printf("originalHandCount: %d  originalNumActions: %d\n", originalHandCount, originalNumActions);
+      200:   42:		printf("currentHandCount: %d  currentNumActions: %d\n", g->handCount[player], g->numActions);
+        -:   43:
+      200:   44:		if (originalNumActions == g->numActions - 2){
+branch  0 taken 0%
+branch  1 taken 100%
+    #####:   45:            numSuccess++;
+    #####:   46:        }
+        -:   47:        else{
+      200:   48:        	numFail++;
+        -:   49:        }
+        -:   50:                        
+        -:   51:
+      200:   52:		free(g);
+      200:   53:	}
+        -:   54:	
+        2:   55:	printf("Testing adventurer card...\nNumber of successful tests: %d. Number of failed tests: %d. Total number of tests: %d]\n", numSuccess, numFail, NUMBER_OF_TESTS);
+        -:   56:
+        2:   57:	return 0;
+        -:   58:}
